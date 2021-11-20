@@ -3,42 +3,60 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TaskResource;
+use App\Http\Validator\TaskValidator;
+use App\Models\Project;
 use App\Models\Task;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class TaskController extends Controller
 {
-    public function index()
+    public function index(Project $project): AnonymousResourceCollection
     {
-        return Task::all();
+        $this->authorize('viewAny', [Task::class, $project]);
+
+        return TaskResource::collection($project->tasks);
     }
 
-    public function store(Request $request)
+    public function show(Project $project, Task $task): TaskResource
     {
-        Task::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'end_at' => $request->end_at,
-        ]);
+        $this->authorize('view', [$task, $project]);
+
+        return TaskResource::make($task->load('assignedUser', 'project', 'category'));
     }
 
-    public function show(Task $user)
+    public function store(Request $request, Project $project): TaskResource
     {
-        return $user;
+        $this->authorize('create', [Task::class, $project]);
+
+        $attributes = (new TaskValidator)->validate(new Task(), $project, $request->all());
+
+        $task = $project->tasks()->create($attributes);
+
+        return TaskResource::make($task);
     }
 
-    public function update(Request $request, Task $user)
+
+    public function update(Request $request, Project $project, Task $task): TaskResource
     {
-        $user->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'end_at' => $request->end_at,
-        ]);
+        $this->authorize('update', [$task, $project]);
+
+        $attributes = (new TaskValidator)->validate($task, $project, $request->all());
+
+        $task->update($attributes);
+
+        return TaskResource::make($task);
     }
 
-    public function destroy(Task $user)
+    public function destroy(Project $project, Task $task): JsonResponse
     {
-        $user->delete();
+        $this->authorize('delete', [$task, $project]);
+
+        $task->delete();
+
+        return response()->json([], Response::HTTP_NO_CONTENT);
     }
 }

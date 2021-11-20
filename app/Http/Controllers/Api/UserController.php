@@ -3,42 +3,40 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
-        return User::all();
+        return UserResource::collection(User::all());
     }
 
-    public function store(Request $request)
+    public function show(User $user): JsonResource
     {
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        return UserResource::make($user);
     }
 
-    public function show(User $user)
+    public function update(UpdateUserRequest $request, User $user): JsonResource
     {
-        return $user;
-    }
+        $this->authorize('update', $user);
 
-    public function update(Request $request, User $user)
-    {
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $user->update($request->validated());
+
+        return UserResource::make($user);
     }
 
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
+
         $user->delete();
+
+        return response()->json('', Response::HTTP_NO_CONTENT);
     }
 }

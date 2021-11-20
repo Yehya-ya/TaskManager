@@ -3,40 +3,55 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Models\Project;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Project $project): AnonymousResourceCollection
     {
-        return Category::all();
+        $this->authorize('viewAny', [Category::class, $project]);
+
+        return CategoryResource::collection($project->categories);
     }
 
-    public function store(Request $request)
+    public function show(Project $project, Category $category): CategoryResource
     {
-        Category::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'user_id' => $user->id,
-        ]);
+        $this->authorize('view', [$category, $project]);
+
+        return CategoryResource::make($category->load(['project', 'tasks']));
     }
 
-    public function show(Category $user)
+    public function store(StoreCategoryRequest $request, Project $project): CategoryResource
     {
-        return $user;
+        $this->authorize('create', [Category::class, $project]);
+
+        $category = $project->categories()->create($request->validated());
+
+        return CategoryResource::make($category);
     }
 
-    public function update(Request $request, Category $user)
+    public function update(UpdateCategoryRequest $request, Project $project, Category $category): CategoryResource
     {
-        $user->update([
-            'title' => $request->title,
-            'description' => $request->description,
-        ]);
+        $this->authorize('update', [$category, $project]);
+
+        $category->update($request->validated());
+
+        return CategoryResource::make($category);
     }
 
-    public function destroy(Category $user)
+    public function destroy(Category $category, Project $project): JsonResponse
     {
-        $user->delete();
+        $this->authorize('delete', [$category, $project]);
+
+        $category->delete();
+
+        return response()->json([], Response::HTTP_NO_CONTENT);
     }
 }
