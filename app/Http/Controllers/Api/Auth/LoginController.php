@@ -7,7 +7,7 @@ use App\Http\Requests\User\LoginRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -15,13 +15,12 @@ class LoginController extends Controller
     {
         $attributes = $login_request->validated();
 
-        $user = User::where('email', $attributes['email'])->first();
-        if (!Hash::check($attributes['password'], $user->password)) {
+        if (!Auth::attempt($attributes, false)) {
             return response()->json('incorrect password.', 403);
         }
 
         return response()->json([
-            'token' => $user->createToken('test')->plainTextToken,
+            'token' => User::firstWhere('email', $attributes['email'])->createToken('test')->plainTextToken,
         ], Response::HTTP_OK);
     }
 }
