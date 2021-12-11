@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -16,7 +17,9 @@ class LoginController extends Controller
         $attributes = $login_request->validated();
 
         if (!Auth::attempt($attributes, false)) {
-            return response()->json('incorrect password.', 403);
+            throw ValidationException::withMessages([
+                'email' => [trans('auth.failed')],
+            ]);
         }
 
         return response()->json([
