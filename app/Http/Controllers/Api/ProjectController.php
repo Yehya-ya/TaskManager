@@ -34,6 +34,12 @@ class ProjectController extends Controller
     {
         $project = auth()->user()->projects()->create($request->validated());
 
+        $project->Categories()->createMany([
+            ["title" => "ToDo"],
+            ["title" => "Doing"],
+            ["title" => "Done"],
+        ]);
+
         return ProjectResource::make($project);
     }
 
