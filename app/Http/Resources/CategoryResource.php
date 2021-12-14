@@ -14,7 +14,6 @@ class CategoryResource extends JsonResource
             'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
 
             $this->merge(Arr::except(parent::toArray($request), [
-                'project_id',
                 'created_at',
                 'updated_at'
             ]))

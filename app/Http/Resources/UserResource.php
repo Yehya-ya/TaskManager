@@ -14,7 +14,6 @@ class UserResource extends JsonResource
             'projects_member_in' => ProjectResource::collection($this->whenLoaded('projectsMemberIn')),
 
             $this->merge(Arr::except(parent::toArray($request), [
-                'id',
                 'pivot',
                 'email_verified_at',
                 'password',

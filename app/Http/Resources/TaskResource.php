@@ -15,9 +15,6 @@ class TaskResource extends JsonResource
             'project' => ProjectResource::make($this->whenLoaded('project')),
 
             $this->merge(Arr::except(parent::toArray($request), [
-                'assigned_user',
-                'category_id',
-                'project_id',
                 'created_at',
                 'updated_at'
             ]))

@@ -16,7 +16,6 @@ class ProjectResource extends JsonResource
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
 
             $this->merge(Arr::except(parent::toArray($request), [
-                'user_id',
                 'created_at',
                 'updated_at',
                 'pivot'
