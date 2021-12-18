@@ -18,7 +18,7 @@ class CategoryController extends Controller
     {
         $this->authorize('viewAny', [Category::class, $project]);
 
-        return CategoryResource::collection($project->categories()->orderBy('id'));
+        return CategoryResource::collection($project->categories()->orderBy('id')->get());
     }
 
     public function show(Project $project, Category $category): CategoryResource
