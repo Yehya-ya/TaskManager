@@ -46,7 +46,7 @@ class CategoryController extends Controller
         return CategoryResource::make($category);
     }
 
-    public function destroy(Category $category, Project $project): JsonResponse
+    public function destroy(Project $project, Category $category): JsonResponse
     {
         $this->authorize('delete', [$category, $project]);
 
