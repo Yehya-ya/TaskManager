@@ -21,6 +21,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('projects/{project}/add-member', [ProjectController::class, 'addMember'])->name('project.add_member');
     Route::put('projects/{project}/remove-member', [ProjectController::class, 'removeMember'])->name('project.remove_member');
     Route::apiResource('projects', ProjectController::class);
+    Route::put('projects/{project}/tasks/{task}/move', [TaskController::class, 'move']);
     Route::apiResource('projects.tasks', TaskController::class);
     Route::apiResource('projects.categories', CategoryController::class);
 });

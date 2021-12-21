@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TaskResource;
+use App\Http\Validator\MoveTaskValidator;
 use App\Http\Validator\TaskValidator;
 use App\Models\Project;
 use App\Models\Task;
@@ -58,5 +59,16 @@ class TaskController extends Controller
         $task->delete();
 
         return response()->json([], Response::HTTP_NO_CONTENT);
+    }
+
+    public function move(Request $request, Project $project, Task $task): TaskResource
+    {
+        $this->authorize('update', [$task, $project]);
+
+        $attributes = (new MoveTaskValidator)->validate($project, $request->all());
+
+        $task->update($attributes);
+
+        return new TaskResource($task);
     }
 }
