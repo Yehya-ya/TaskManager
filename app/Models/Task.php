@@ -22,6 +22,12 @@ class Task extends Model
         'end_at' => 'datetime',
     ];
 
+    protected $touches = [
+        'assignedUser',
+        'project',
+        'category'
+    ];
+
     public function assignedUser(): BelongsTo
     {
         return $this->belongsTo(User::class);

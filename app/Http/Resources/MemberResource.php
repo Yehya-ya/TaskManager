@@ -13,8 +13,7 @@ class MemberResource extends JsonResource
             'project' => ProjectResource::make($this->whenLoaded('project')),
             $this->merge(Arr::except(parent::toArray($request), [
                 'project_id',
-                'created_at',
-                'updated_at',
+                'created_at'
             ]))
         ];
     }
