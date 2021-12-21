@@ -21,7 +21,7 @@ class CategoryPolicy
 
     public function view(User $user, Category $category, Project $project): Response
     {
-        return ($project->user_id === $user->id || $project->members()->where('user_id', $user->id)->exists())
+        return (($project->user_id === $user->id || $project->members()->where('user_id', $user->id)->exists()) && $project->categories()->where('id', $category->id)->exists())
             ? Response::allow()
             : Response::deny();
     }
@@ -35,14 +35,14 @@ class CategoryPolicy
 
     public function update(User $user, Category $category, Project $project): Response
     {
-        return $project->user_id === $user->id
+        return ($project->user_id === $user->id && $project->categories()->where('id', $category->id)->exists())
             ? Response::allow()
             : Response::deny();
     }
 
     public function delete(User $user, Category $category, Project $project): Response
     {
-        return $project->user_id === $user->id
+        return ($project->user_id === $user->id && $project->categories()->where('id', $category->id)->exists())
             ? Response::allow()
             : Response::deny();
     }

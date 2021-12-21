@@ -21,7 +21,7 @@ class TaskPolicy
 
     public function view(User $user, Task $task, Project $project): Response
     {
-        return ($project->user_id === $user->id || $project->members()->where('user_id', $user->id)->exists())
+        return (($project->user_id === $user->id || $project->members()->where('user_id', $user->id)->exists()) && $project->tasks()->where('id', $task->id)->exists())
             ? Response::allow()
             : Response::deny();
     }
@@ -35,14 +35,14 @@ class TaskPolicy
 
     public function update(User $user, Task $task, Project $project): Response
     {
-        return ($project->user_id === $user->id || optional($task->assigned_user)->id === $user->id)
+        return (($project->user_id === $user->id || optional($task->assigned_user)->id === $user->id) && $project->tasks()->where('id', $task->id)->exists())
             ? Response::allow()
             : Response::deny();
     }
 
     public function delete(User $user, Task $task, Project $project): Response
     {
-        return $project->user_id === $user->id
+        return ($project->user_id === $user->id && $project->tasks()->where('id', $task->id)->exists())
             ? Response::allow()
             : Response::deny();
     }
