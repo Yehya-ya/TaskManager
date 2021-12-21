@@ -20,7 +20,7 @@ class ProjectController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return ProjectResource::collection(auth()->user()->projects);
+        return ProjectResource::collection(auth()->user()->projects()->orderBy('id')->get());
     }
 
     public function show(Project $project): ProjectResource
