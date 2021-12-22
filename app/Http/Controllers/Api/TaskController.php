@@ -47,6 +47,7 @@ class TaskController extends Controller
 
         $attributes = (new TaskValidator)->validate($task, $project, $request->all());
 
+        $task->category->touch();
         $task->update($attributes);
 
         return TaskResource::make($task);
