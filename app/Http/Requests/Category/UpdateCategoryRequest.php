@@ -15,7 +15,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'title' => ['sometimes', 'required', 'string', 'max:255'],
-            'description' => ['string'],
+            'description' => ['string', 'nullable'],
         ];
     }
 }

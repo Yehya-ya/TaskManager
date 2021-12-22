@@ -15,8 +15,8 @@ class TaskValidator
                 'title' => [Rule::when($task->exists, 'sometimes'), 'required', 'string', 'max:255'],
                 'category_id' => [Rule::when($task->exists, 'sometimes'), 'required', 'integer', Rule::exists('categories', 'id')->where('project_id', $project->id)],
 
-                'description' => ['string'],
-                'end_at' => ['date', 'date:Y-m-d', 'after:today'],
+                'description' => ['string', 'nullable'],
+                'end_at' => ['date', 'date:Y-m-d', 'after:today', 'nullable'],
                 'assigned_user' => ['string', 'email', 'max:255', Rule::exists('project_user', 'email')->where('project_id', $project->id)],
             ]
         )->validate();
