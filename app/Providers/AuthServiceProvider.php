@@ -21,10 +21,11 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
     ];
 
-    public function boot()
+    /**
+     * Register any authentication / authorization services.
+     */
+    public function boot(): void
     {
-        $this->registerPolicies();
-
         //
     }
 }
