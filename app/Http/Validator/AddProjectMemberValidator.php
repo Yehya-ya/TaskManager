@@ -18,7 +18,7 @@ class AddProjectMemberValidator
                     'email',
                     'max:255',
                     Rule::unique('members', 'email')->where('project_id', $project->id),
-                ]
+                ],
             ]
         )->validate();
     }

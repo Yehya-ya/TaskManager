@@ -16,7 +16,7 @@ class TaskResource extends JsonResource
 
             $this->merge(Arr::except(parent::toArray($request), [
                 'created_at',
-            ]))
+            ])),
         ];
     }
 }

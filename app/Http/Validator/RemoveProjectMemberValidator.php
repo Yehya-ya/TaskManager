@@ -15,8 +15,8 @@ class RemoveProjectMemberValidator
                 'member_id' => [
                     'required',
                     'integer',
-                    Rule::exists('members', 'id')->where('project_id', $project->id)
-                ]
+                    Rule::exists('members', 'id')->where('project_id', $project->id),
+                ],
             ]
         )->validate();
     }

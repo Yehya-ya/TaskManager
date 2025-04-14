@@ -16,7 +16,7 @@ class LoginController extends Controller
     {
         $attributes = $login_request->validated();
 
-        if (!Auth::attempt($attributes, false)) {
+        if (! Auth::attempt($attributes, false)) {
             throw ValidationException::withMessages([
                 'email' => [trans('auth.failed')],
             ]);

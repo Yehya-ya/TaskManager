@@ -40,7 +40,6 @@ class TaskController extends Controller
         return TaskResource::make($task);
     }
 
-
     public function update(Request $request, Project $project, Task $task): TaskResource
     {
         $this->authorize('update', [$task, $project]);

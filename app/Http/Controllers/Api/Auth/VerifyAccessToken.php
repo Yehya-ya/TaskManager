@@ -11,6 +11,6 @@ class VerifyAccessToken extends Controller
 {
     public function __invoke(): JsonResponse
     {
-        return response()->json(["data" => UserResource::make(auth()->user())], Response::HTTP_OK);
+        return response()->json(['data' => UserResource::make(auth()->user())], Response::HTTP_OK);
     }
 }

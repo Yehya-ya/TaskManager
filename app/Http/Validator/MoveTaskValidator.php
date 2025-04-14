@@ -15,7 +15,7 @@ class MoveTaskValidator
                     'required',
                     'int',
                     Rule::exists('categories', 'id')->where('project_id', $project->id),
-                ]
+                ],
             ]
         )->validate();
     }

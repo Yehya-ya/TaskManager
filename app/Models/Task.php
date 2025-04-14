@@ -25,7 +25,7 @@ class Task extends Model
     protected $touches = [
         'assignedUser',
         'project',
-        'category'
+        'category',
     ];
 
     public function assignedUser(): BelongsTo

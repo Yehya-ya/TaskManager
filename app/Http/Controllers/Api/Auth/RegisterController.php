@@ -23,12 +23,10 @@ class RegisterController extends Controller
 
         Member::where('email', $user->email)->update(['user_id' => $user->id]);
 
-        $token = $user->createToken("" . now());
+        $token = $user->createToken(''.now());
 
         return response()->json([
             'token' => $token->plainTextToken,
         ]);
     }
-
-
 }
