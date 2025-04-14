@@ -11,26 +11,27 @@ use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 
 class CategoryController extends Controller
 {
     public function index(Project $project): AnonymousResourceCollection
     {
-        $this->authorize('viewAny', [Category::class, $project]);
+        Gate::authorize('viewAny', [Category::class, $project]);
 
         return CategoryResource::collection($project->categories()->orderBy('id')->get());
     }
 
     public function show(Project $project, Category $category): CategoryResource
     {
-        $this->authorize('view', [$category, $project]);
+        Gate::authorize('view', [$category, $project]);
 
         return CategoryResource::make($category->load(['project', 'tasks']));
     }
 
     public function store(StoreCategoryRequest $request, Project $project): CategoryResource
     {
-        $this->authorize('create', [Category::class, $project]);
+        Gate::authorize('create', [Category::class, $project]);
 
         $category = $project->categories()->create($request->validated());
 
@@ -39,7 +40,7 @@ class CategoryController extends Controller
 
     public function update(UpdateCategoryRequest $request, Project $project, Category $category): CategoryResource
     {
-        $this->authorize('update', [$category, $project]);
+        Gate::authorize('update', [$category, $project]);
 
         $category->update($request->validated());
 
@@ -48,7 +49,7 @@ class CategoryController extends Controller
 
     public function destroy(Project $project, Category $category): JsonResponse
     {
-        $this->authorize('delete', [$category, $project]);
+        Gate::authorize('delete', [$category, $project]);
 
         $category->delete();
 

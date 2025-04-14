@@ -12,28 +12,29 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
     public function index(Project $project): AnonymousResourceCollection
     {
-        $this->authorize('viewAny', [Task::class, $project]);
+        Gate::authorize('viewAny', [Task::class, $project]);
 
         return TaskResource::collection($project->tasks);
     }
 
     public function show(Project $project, Task $task): TaskResource
     {
-        $this->authorize('view', [$task, $project]);
+        Gate::authorize('view', [$task, $project]);
 
         return TaskResource::make($task->load('assignedUser', 'project', 'category'));
     }
 
     public function store(Request $request, Project $project): TaskResource
     {
-        $this->authorize('create', [Task::class, $project]);
+        Gate::authorize('create', [Task::class, $project]);
 
-        $attributes = (new TaskValidator)->validate(new Task(), $project, $request->all());
+        $attributes = (new TaskValidator)->validate(new Task, $project, $request->all());
 
         $task = $project->tasks()->create($attributes);
 
@@ -42,7 +43,7 @@ class TaskController extends Controller
 
     public function update(Request $request, Project $project, Task $task): TaskResource
     {
-        $this->authorize('update', [$task, $project]);
+        Gate::authorize('update', [$task, $project]);
 
         $attributes = (new TaskValidator)->validate($task, $project, $request->all());
 
@@ -54,7 +55,7 @@ class TaskController extends Controller
 
     public function destroy(Project $project, Task $task): JsonResponse
     {
-        $this->authorize('delete', [$task, $project]);
+        Gate::authorize('delete', [$task, $project]);
 
         $task->delete();
 
@@ -63,7 +64,7 @@ class TaskController extends Controller
 
     public function move(Request $request, Project $project, Task $task): TaskResource
     {
-        $this->authorize('update', [$task, $project]);
+        Gate::authorize('update', [$task, $project]);
 
         $attributes = (new MoveTaskValidator)->validate($project, $request->all());
 

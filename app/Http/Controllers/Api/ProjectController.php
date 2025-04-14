@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
@@ -25,7 +26,7 @@ class ProjectController extends Controller
 
     public function show(Project $project): ProjectResource
     {
-        $this->authorize('view', $project);
+        Gate::authorize('view', $project);
 
         return ProjectResource::make($project->load(['owner', 'members', 'tasks', 'categories']));
     }
@@ -45,7 +46,7 @@ class ProjectController extends Controller
 
     public function update(UpdateProjectRequest $request, Project $project): ProjectResource
     {
-        $this->authorize('update', $project);
+        Gate::authorize('update', $project);
 
         $project->update($request->validated());
 
@@ -54,7 +55,7 @@ class ProjectController extends Controller
 
     public function destroy(Project $project): JsonResponse
     {
-        $this->authorize('delete', $project);
+        Gate::authorize('delete', $project);
 
         $project->delete();
 
@@ -63,9 +64,9 @@ class ProjectController extends Controller
 
     public function addMember(Request $request, Project $project): ProjectResource
     {
-        $this->authorize('update', $project);
+        Gate::authorize('update', $project);
 
-        $email = (new AddProjectMemberValidator())->validate($project, auth()->user(), $request->all())['email'];
+        $email = (new AddProjectMemberValidator)->validate($project, auth()->user(), $request->all())['email'];
 
         Member::create([
             'user_id' => optional(User::firstWhere('email', $email))->id,
@@ -78,9 +79,9 @@ class ProjectController extends Controller
 
     public function removeMember(Request $request, Project $project): ProjectResource
     {
-        $this->authorize('update', $project);
+        Gate::authorize('update', $project);
 
-        $member_id = (new RemoveProjectMemberValidator())->validate($project, auth()->user(), $request->all())['member_id'];
+        $member_id = (new RemoveProjectMemberValidator)->validate($project, auth()->user(), $request->all())['member_id'];
 
         Member::findOrFail($member_id)->delete();
 

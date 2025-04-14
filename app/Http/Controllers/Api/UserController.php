@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -25,7 +26,7 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user): JsonResource
     {
-        $this->authorize('update', $user);
+        Gate::authorize('update', $user);
 
         $user->update($request->validated());
 
@@ -34,7 +35,7 @@ class UserController extends Controller
 
     public function destroy(User $user): JsonResponse
     {
-        $this->authorize('delete', $user);
+        Gate::authorize('delete', $user);
 
         $user->delete();
 
