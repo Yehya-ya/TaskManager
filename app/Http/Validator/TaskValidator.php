@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Validator;
 
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Validation\Rule;
 
-class TaskValidator
+final class TaskValidator
 {
     public function validate(Task $task, Project $project, array $attributes): array
     {

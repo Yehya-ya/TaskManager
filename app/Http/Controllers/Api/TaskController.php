@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Resources\TaskResource;
 use App\Http\Validator\MoveTaskValidator;
 use App\Http\Validator\TaskValidator;
@@ -14,7 +15,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
-class TaskController extends Controller
+final class TaskController
 {
     public function index(Project $project): AnonymousResourceCollection
     {

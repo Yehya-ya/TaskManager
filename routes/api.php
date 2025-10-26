@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
@@ -15,7 +17,7 @@ Route::post('login', LoginController::class)->name('login');
 Route::post('verify_access_token', VerifyAccessToken::class)->middleware('auth:sanctum')->name('verify_access_token');
 Route::post('logout', LogoutController::class)->middleware('auth:sanctum')->name('logout');
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::group(['middleware' => 'auth:sanctum'], function (): void {
     Route::apiResource('users', UserController::class)->except(['store']);
     Route::put('projects/{project}/add-member', [ProjectController::class, 'addMember'])->name('project.add_member');
     Route::put('projects/{project}/remove-member', [ProjectController::class, 'removeMember'])->name('project.remove_member');

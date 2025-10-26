@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Validator;
 
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Validation\Rule;
 
-class AddProjectMemberValidator
+final class AddProjectMemberValidator
 {
-    public function validate(Project $project, User $user, $attributes): array
+    public function validate(Project $project, User $user, array $attributes): array
     {
         return validator($attributes,
             [

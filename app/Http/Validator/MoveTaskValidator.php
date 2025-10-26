@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Validator;
 
 use App\Models\Project;
 use Illuminate\Validation\Rule;
 
-class MoveTaskValidator
+final class MoveTaskValidator
 {
-    public function validate(Project $project, $attributes): array
+    public function validate(Project $project, array $attributes): array
     {
         return validator($attributes,
             [
