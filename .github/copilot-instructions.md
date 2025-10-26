@@ -1,17 +1,62 @@
-<laravel-boost-guidelines>
-=== foundation rules ===
+# TaskManager AI Assistant Guidelines
 
-# Laravel Boost Guidelines
+This document provides essential context for AI agents working with this Laravel-based task management application.
 
-The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines should be followed closely to enhance the user's satisfaction building Laravel applications.
+## Project Overview
+
+TaskManager is a collaborative task management system built with Laravel 12, using modern PHP 8.4 practices. The system manages projects, tasks, and team members with a strong focus on access control and data integrity.
+
+## Core Architecture
+
+### Domain Model
+- `Project`: Central entity owned by a user, containing tasks and categories
+- `Task`: Belongs to a project and category, can be assigned to users
+- `Category`: Project-specific task grouping
+- `Member`: Pivot model managing project memberships
+- `User`: Represents system users who can own projects or be members
+
+### Key Patterns
+1. **Strict Type Safety**
+   - Uses `declare(strict_types=1)`
+   - All classes marked as `final`
+   - Explicit return types and type hints required
+   ```php
+   final class Task extends Model
+   {
+       public function project(): BelongsTo
+       {
+           return $this->belongsTo(Project::class);
+       }
+   }
+   ```
+
+2. **Authorization**
+   - Uses Laravel Policies extensively (`app/Policies/`)
+   - Project owners have full control
+   - Project members have limited view access
+   ```php
+   public function view(User $user, Project $project): Response
+   {
+       return ($project->user_id === $user->id || $project->members()->where('user_id', $user->id)->exists())
+           ? Response::allow()
+           : Response::deny();
+   }
+   ```
+
+3. **API Structure**
+   - RESTful API protected by Sanctum authentication
+   - Nested resources (e.g., `projects.tasks`, `projects.categories`)
+   - Custom endpoints for member management
 
 ## Foundational Context
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.4.12
+- php - 8.4.14
 - laravel/framework (LARAVEL) - v12
 - laravel/prompts (PROMPTS) - v0
+- laravel/sanctum (SANCTUM) - v4
 - larastan/larastan (LARASTAN) - v3
+- laravel/mcp (MCP) - v0
 - laravel/pint (PINT) - v1
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
@@ -319,7 +364,7 @@ $pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
 - `corePlugins` is not supported in Tailwind v4.
 - In Tailwind v4, you import Tailwind using a regular CSS `@import` statement, not using the `@tailwind` directives used in v3:
 
-<code-snippet name="Tailwind v4 Import Tailwind Diff" lang="diff"
+<code-snippet name="Tailwind v4 Import Tailwind Diff" lang="diff">
    - @tailwind base;
    - @tailwind components;
    - @tailwind utilities;
@@ -344,7 +389,6 @@ $pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
 | overflow-ellipsis | text-ellipsis |
 | decoration-slice | box-decoration-slice |
 | decoration-clone | box-decoration-clone |
-
 
 === tests rules ===
 
