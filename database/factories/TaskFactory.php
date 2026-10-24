@@ -9,12 +9,14 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Override;
 
 /**
  * @extends Factory<Task>
  */
 final class TaskFactory extends Factory
 {
+    #[Override]
     protected $model = Task::class;
 
     public function definition(): array

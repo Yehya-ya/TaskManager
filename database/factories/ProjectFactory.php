@@ -7,12 +7,14 @@ namespace Database\Factories;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Override;
 
 /**
  * @extends Factory<Project>
  */
 final class ProjectFactory extends Factory
 {
+    #[Override]
     protected $model = Project::class;
 
     public function definition(): array

@@ -8,12 +8,14 @@ use App\Models\Member;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Override;
 
 /**
  * @extends Factory<Member>
  */
 final class MemberFactory extends Factory
 {
+    #[Override]
     protected $model = Member::class;
 
     public function definition(): array
