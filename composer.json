@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.5.0",
         "laravel/framework": "^13.38",
+        "laravel/nightwatch": "^1.30",
         "laravel/sanctum": "^4.3.3",
         "laravel/tinker": "^3.0.2",
         "nunomaduro/essentials": "^1.2.0"
