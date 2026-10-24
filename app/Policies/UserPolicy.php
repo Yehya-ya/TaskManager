@@ -12,6 +12,13 @@ final class UserPolicy
 {
     use HandlesAuthorization;
 
+    public function view(User $user, User $model): Response
+    {
+        return $user->visibleUsers()->whereKey($model->id)->exists()
+            ? Response::allow()
+            : Response::deny();
+    }
+
     public function update(User $user, User $model): Response
     {
         return $user->id === $model->id

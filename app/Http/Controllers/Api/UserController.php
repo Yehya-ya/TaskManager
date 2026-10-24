@@ -17,11 +17,13 @@ final class UserController
 {
     public function index(): AnonymousResourceCollection
     {
-        return UserResource::collection(User::all());
+        return UserResource::collection(auth()->user()->visibleUsers()->orderBy('id')->get());
     }
 
     public function show(User $user): JsonResource
     {
+        Gate::authorize('view', $user);
+
         return UserResource::make($user);
     }
 

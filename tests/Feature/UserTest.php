@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Models\Member;
+use App\Models\Project;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
@@ -14,22 +16,41 @@ beforeEach(function (): void {
     Sanctum::actingAs($this->user);
 });
 
-it('lists all users', function (): void {
-    User::factory()->count(3)->create();
+it('lists only the user and the users who share a project with them', function (): void {
+    $ownedProject = Project::factory()->create(['user_id' => $this->user->id]);
+    $memberOfOwnedProject = Member::factory()->withUser()->create(['project_id' => $ownedProject->id])->user;
+    $ownerOfJoinedProject = Member::factory()->forEmail($this->user->email)->create()->project->owner;
+    User::factory()->create();
 
     $response = getJson('/api/users');
 
     $response->assertOk()
         ->assertJsonStructure(['data' => ['*' => ['id', 'name', 'email', 'updated_at']]]);
+
+    expect($response->json('data.*.id'))->toBe([$this->user->id, $memberOfOwnedProject->id, $ownerOfJoinedProject->id]);
 });
 
-it('shows specific user', function (): void {
-    $other = User::factory()->create();
+it('shows a user who shares a project', function (): void {
+    $project = Project::factory()->create(['user_id' => $this->user->id]);
+    $other = Member::factory()->withUser()->create(['project_id' => $project->id])->user;
 
     $response = getJson("/api/users/{$other->id}");
 
     $response->assertOk()
         ->assertJsonPath('data.id', $other->id);
+});
+
+it('shows the user their own profile when they have no projects', function (): void {
+    $response = getJson("/api/users/{$this->user->id}");
+
+    $response->assertOk()
+        ->assertJsonPath('data.id', $this->user->id);
+});
+
+it('returns 403 when showing a user who shares no project', function (): void {
+    $stranger = User::factory()->create();
+
+    getJson("/api/users/{$stranger->id}")->assertForbidden();
 });
 
 it('updates own user profile', function (): void {

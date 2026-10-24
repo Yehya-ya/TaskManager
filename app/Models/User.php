@@ -46,6 +46,21 @@ final class User extends Authenticatable
     }
 
     /**
+     * Get a query for the user and the users who share a project with them.
+     *
+     * @return Builder<self>
+     */
+    public function visibleUsers(): Builder
+    {
+        $visibleProjectIds = $this->visibleProjects()->select('id');
+
+        return self::query()->where(fn (Builder $query): Builder => $query
+            ->whereKey($this->id)
+            ->orWhereHas('projects', fn (Builder $projects): Builder => $projects->whereIn('projects.id', $visibleProjectIds))
+            ->orWhereHas('memberIn', fn (Builder $projects): Builder => $projects->whereIn('projects.id', $visibleProjectIds)));
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
