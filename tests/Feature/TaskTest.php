@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Category;
+use App\Models\Member;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
@@ -102,6 +103,59 @@ it('updates task details', function (): void {
     $task->refresh();
     expect($task->title)->toBe('Updated Task')
         ->and($task->description)->toBe('Updated Description');
+});
+
+it('assigns a task to a user who belongs to the project', function (User $assignee): void {
+    $category = $this->project->categories->first();
+
+    $response = postJson("/api/projects/{$this->project->id}/tasks", [
+        'title' => 'New Task',
+        'category_id' => $category->id,
+        'assigned_user' => $assignee->id,
+    ]);
+
+    $response->assertCreated()
+        ->assertJsonPath('data.assigned_user.id', $assignee->id);
+
+    $this->assertDatabaseHas('tasks', [
+        'title' => 'New Task',
+        'project_id' => $this->project->id,
+        'assigned_user' => $assignee->id,
+    ]);
+})->with([
+    'the owner' => fn (): User => $this->user,
+    'a member' => fn (): User => Member::factory()->withUser()->create(['project_id' => $this->project->id])->user,
+]);
+
+it('rejects assigning a task to a user outside the project', function (): void {
+    $memberOfAnotherProject = Member::factory()->withUser()->create()->user;
+
+    $response = postJson("/api/projects/{$this->project->id}/tasks", [
+        'title' => 'New Task',
+        'category_id' => $this->project->categories->first()->id,
+        'assigned_user' => $memberOfAnotherProject->id,
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['assigned_user' => 'The selected assigned user is invalid.']);
+
+    $this->assertDatabaseCount('tasks', 0);
+});
+
+it('unassigns a task when assigned_user is null', function (): void {
+    $task = Task::factory()->create([
+        'project_id' => $this->project->id,
+        'category_id' => $this->project->categories->first()->id,
+        'assigned_user' => $this->user->id,
+    ]);
+
+    $response = putJson("/api/projects/{$this->project->id}/tasks/{$task->id}", [
+        'assigned_user' => null,
+    ]);
+
+    $response->assertOk();
+
+    expect($task->refresh()->assigned_user)->toBeNull();
 });
 
 it('deletes task', function (): void {

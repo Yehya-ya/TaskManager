@@ -6,6 +6,7 @@ namespace App\Http\Validator;
 
 use App\Models\Project;
 use App\Models\Task;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Validation\Rule;
 
 final class TaskValidator
@@ -19,7 +20,13 @@ final class TaskValidator
 
                 'description' => ['string', 'nullable'],
                 'end_at' => ['date', 'date:Y-m-d', 'after:today', 'nullable'],
-                'assigned_user' => ['string', 'email', 'max:255', Rule::exists('project_user', 'email')->where('project_id', $project->id)],
+                'assigned_user' => [
+                    'integer',
+                    Rule::exists('users', 'id')->where(fn (Builder $query): Builder => $query
+                        ->where('id', $project->user_id)
+                        ->orWhereIn('id', $project->members()->select('user_id'))),
+                    'nullable',
+                ],
             ]
         )->validate();
     }
