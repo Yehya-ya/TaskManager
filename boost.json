@@ -1,10 +1,17 @@
 {
     "agents": [
-        "copilot"
+        "claude_code"
     ],
-    "editors": [
-        "vscode"
-    ],
-    "guidelines": [],
-    "herd_mcp": true
+    "cloud": true,
+    "guidelines": true,
+    "mcp": true,
+    "nightwatch": false,
+    "sail": false,
+    "skills": [
+        "infer-conventions",
+        "deploying-to-cloud",
+        "laravel-best-practices",
+        "testing-best-practices",
+        "tailwindcss-development"
+    ]
 }
