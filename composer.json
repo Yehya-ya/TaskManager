@@ -86,7 +86,10 @@
             "pint --parallel --test",
             "rector --dry-run"
         ],
-        "test:unit": "pest --parallel --coverage --min=98",
+        "test:unit": [
+            "@putenv XDEBUG_MODE=coverage",
+            "pest --parallel --coverage --min=98"
+        ],
         "test:types": "phpstan",
         "test": [
             "@test:type-coverage",
