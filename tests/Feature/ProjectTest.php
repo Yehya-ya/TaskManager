@@ -36,6 +36,19 @@ it('lists user projects', function (): void {
     expect($response->json('data.*.id'))->not->toContain($otherUserProject->id);
 });
 
+it('lists projects the user is a member of once, alongside owned projects', function (): void {
+    $ownedProject = Project::factory()->create(['user_id' => $this->user->id]);
+    Member::factory()->forEmail($this->user->email)->create(['project_id' => $ownedProject->id]);
+    $memberProject = Member::factory()->forEmail($this->user->email)->create()->project;
+    Member::factory()->withUser()->create();
+
+    $response = getJson('/api/projects');
+
+    $response->assertOk();
+
+    expect($response->json('data.*.id'))->toBe([$ownedProject->id, $memberProject->id]);
+});
+
 it('shows project details', function (): void {
     $project = Project::factory()
         ->has(Category::factory()->count(3))

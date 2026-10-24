@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,6 +31,18 @@ final class User extends Authenticatable
     public function memberIn(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, Member::class)->using(Member::class);
+    }
+
+    /**
+     * Get a query for the projects the user owns or is a member of.
+     *
+     * @return Builder<Project>
+     */
+    public function visibleProjects(): Builder
+    {
+        return Project::query()->where(fn (Builder $query): Builder => $query
+            ->whereBelongsTo($this, 'owner')
+            ->orWhereRelation('members', 'user_id', $this->id));
     }
 
     /**

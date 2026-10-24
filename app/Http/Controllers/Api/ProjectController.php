@@ -22,7 +22,7 @@ final class ProjectController
 {
     public function index(): AnonymousResourceCollection
     {
-        return ProjectResource::collection(auth()->user()->projects()->orderBy('id')->get());
+        return ProjectResource::collection(auth()->user()->visibleProjects()->orderBy('id')->get());
     }
 
     public function show(Project $project): ProjectResource
