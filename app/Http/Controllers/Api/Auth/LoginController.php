@@ -15,14 +15,16 @@ final class LoginController
 {
     public function __invoke(LoginRequest $login_request): JsonResponse
     {
-        $attributes = $login_request->validated();
+        $credentials = $login_request->safe()->only(['email', 'password']);
 
-        throw_unless(Auth::attempt($attributes, false), ValidationException::withMessages([
+        throw_unless(Auth::attempt($credentials, false), ValidationException::withMessages([
             'email' => [trans('auth.failed')],
         ]));
 
+        $tokenName = $login_request->validated('device_name') ?? 'api';
+
         return response()->json([
-            'token' => User::query()->firstWhere('email', $attributes['email'])->createToken('test')->plainTextToken,
+            'token' => User::query()->firstWhere('email', $credentials['email'])->createToken($tokenName)->plainTextToken,
         ], Response::HTTP_OK);
     }
 }
