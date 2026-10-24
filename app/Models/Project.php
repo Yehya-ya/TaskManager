@@ -26,7 +26,7 @@ final class Project extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'members')->using(Member::class);
+        return $this->belongsToMany(User::class, Member::class)->using(Member::class);
     }
 
     public function tasks(): HasMany
