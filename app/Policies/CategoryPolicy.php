@@ -16,14 +16,14 @@ final class CategoryPolicy
 
     public function viewAny(User $user, Project $project): Response
     {
-        return ($project->user_id === $user->id || $project->members()->where('user_id', $user->id)->exists())
+        return $project->isVisibleTo($user)
             ? Response::allow()
             : Response::deny();
     }
 
     public function view(User $user, Category $category, Project $project): Response
     {
-        return (($project->user_id === $user->id || $project->members()->where('user_id', $user->id)->exists()) && $project->categories()->where('id', $category->id)->exists())
+        return ($project->isVisibleTo($user) && $project->categories()->where('id', $category->id)->exists())
             ? Response::allow()
             : Response::deny();
     }

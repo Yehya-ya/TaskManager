@@ -71,6 +71,15 @@ it('shows project details', function (): void {
         ]);
 });
 
+it('shows project details to a member', function (): void {
+    $project = Member::factory()->forEmail($this->user->email)->create()->project;
+
+    $response = getJson("/api/projects/{$project->id}");
+
+    $response->assertOk()
+        ->assertJsonPath('data.id', $project->id);
+});
+
 it('prevents viewing projects user does not own or is not member of', function (): void {
     $project = Project::factory()->create();
 

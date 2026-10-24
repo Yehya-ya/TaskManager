@@ -16,14 +16,14 @@ final class TaskPolicy
 
     public function viewAny(User $user, Project $project): Response
     {
-        return ($project->user_id === $user->id || $project->members()->where('user_id', $user->id)->exists())
+        return $project->isVisibleTo($user)
             ? Response::allow()
             : Response::deny();
     }
 
     public function view(User $user, Task $task, Project $project): Response
     {
-        return (($project->user_id === $user->id || $project->members()->where('user_id', $user->id)->exists()) && $task->project_id === $project->id)
+        return ($project->isVisibleTo($user) && $task->project_id === $project->id)
             ? Response::allow()
             : Response::deny();
     }

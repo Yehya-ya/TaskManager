@@ -38,4 +38,12 @@ final class Project extends Model
     {
         return $this->hasMany(Category::class);
     }
+
+    /**
+     * Determine whether the user owns the project or is a member of it.
+     */
+    public function isVisibleTo(User $user): bool
+    {
+        return $this->user_id === $user->id || $this->members()->whereBelongsTo($user)->exists();
+    }
 }

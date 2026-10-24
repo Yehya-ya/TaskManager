@@ -15,7 +15,7 @@ final class ProjectPolicy
 
     public function view(User $user, Project $project): Response
     {
-        return ($project->user_id === $user->id || $project->members()->where('user_id', $user->id)->exists())
+        return $project->isVisibleTo($user)
             ? Response::allow()
             : Response::deny();
     }
