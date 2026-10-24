@@ -44,3 +44,23 @@ it('validates required fields for login', function (): void {
     $response->assertUnprocessable()
         ->assertJsonValidationErrors(['email', 'password']);
 });
+
+it('returns 429 after five login attempts for the same email', function (): void {
+    $credentials = ['email' => 'test@example.com', 'password' => 'wrong-password'];
+
+    for ($attempt = 1; $attempt <= 5; $attempt++) {
+        postJson('/api/login', $credentials)->assertUnprocessable();
+    }
+
+    postJson('/api/login', $credentials)->assertTooManyRequests();
+});
+
+it('does not throttle logins for other emails', function (): void {
+    for ($attempt = 1; $attempt <= 5; $attempt++) {
+        postJson('/api/login', ['email' => 'test@example.com', 'password' => 'wrong-password']);
+    }
+
+    $response = postJson('/api/login', ['email' => 'other@example.com', 'password' => 'wrong-password']);
+
+    $response->assertUnprocessable();
+});

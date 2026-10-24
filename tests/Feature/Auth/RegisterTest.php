@@ -67,3 +67,11 @@ it('prevents registration with existing email', function (): void {
     $response->assertUnprocessable()
         ->assertJsonValidationErrors(['email']);
 });
+
+it('returns 429 after five registration attempts', function (): void {
+    for ($attempt = 1; $attempt <= 5; $attempt++) {
+        postJson('/api/register', [])->assertUnprocessable();
+    }
+
+    postJson('/api/register', [])->assertTooManyRequests();
+});

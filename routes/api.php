@@ -12,8 +12,8 @@ use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('register', RegisterController::class)->name('register');
-Route::post('login', LoginController::class)->name('login');
+Route::post('register', RegisterController::class)->middleware('throttle:register')->name('register');
+Route::post('login', LoginController::class)->middleware('throttle:login')->name('login');
 Route::post('verify_access_token', VerifyAccessToken::class)->middleware('auth:sanctum')->name('verify_access_token');
 Route::post('logout', LogoutController::class)->middleware('auth:sanctum')->name('logout');
 
